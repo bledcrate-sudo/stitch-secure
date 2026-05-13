@@ -219,17 +219,29 @@ footer li a { font-size: 0.875rem; }
   outline: none; border-color: var(--accent);
 }
 .form-group textarea { resize: vertical; min-height: 80px; }
-.services-check { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.services-check { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; }
 .services-check label {
-  display: flex; align-items: center; gap: 0.5rem;
-  font-weight: 400; font-size: 0.875rem; cursor: pointer;
-  padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid var(--border);
-  transition: background 0.15s, border-color 0.15s;
+  display: flex; align-items: center; gap: 0.625rem;
+  font-weight: 500; font-size: 0.875rem; cursor: pointer;
+  padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1.5px solid var(--border);
+  transition: all 0.2s ease; user-select: none;
 }
+.services-check label:hover { border-color: var(--accent-muted); background: oklch(0.55 0.18 50 / 0.03); }
 .services-check label:has(input:checked) {
-  background: oklch(0.55 0.18 50 / 0.08); border-color: var(--accent);
+  background: oklch(0.55 0.18 50 / 0.08); border-color: var(--accent); color: var(--accent-strong);
 }
-.services-check input[type="checkbox"] { accent-color: var(--accent); }
+.services-check input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none; width: 1.125rem; height: 1.125rem;
+  border: 1.5px solid var(--border); border-radius: 0.25rem; flex-shrink: 0;
+  display: grid; place-content: center; transition: all 0.15s ease; cursor: pointer;
+}
+.services-check input[type="checkbox"]::after {
+  content: '✓'; font-size: 0.75rem; color: #fff; display: none;
+}
+.services-check input[type="checkbox"]:checked {
+  background: var(--accent); border-color: var(--accent);
+}
+.services-check input[type="checkbox"]:checked::after { display: block; }
 .form-submit {
   width: 100%; padding: 0.875rem; margin-top: 0.5rem;
 }
