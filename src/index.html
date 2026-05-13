@@ -187,6 +187,58 @@ footer li a { font-size: 0.875rem; }
 .footer-bottom { border-top: 1px solid oklch(1 0 0 / 0.08); padding-top: 1.5rem; font-size: 0.8125rem; text-align: center; }
 .footer-bottom p { max-width: none; }
 
+/* modal */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: oklch(0 0 0 / 0.6); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 1.5rem;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface-raised); border-radius: 1rem; padding: 2.5rem;
+  max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 64px oklch(0 0 0 / 0.2);
+  position: relative;
+}
+.modal-close {
+  position: absolute; top: 1rem; right: 1rem;
+  background: none; border: none; cursor: pointer; color: var(--text-muted);
+  font-size: 1.5rem; line-height: 1; padding: 0.25rem;
+}
+.modal-close:hover { color: var(--text); }
+.modal h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.modal .modal-sub { font-size: 0.9375rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+.form-group { margin-bottom: 1.25rem; }
+.form-group label { display: block; font-weight: 600; font-size: 0.875rem; margin-bottom: 0.375rem; }
+.form-group input, .form-group textarea {
+  width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border);
+  border-radius: 0.5rem; font-family: var(--font-body); font-size: 0.9375rem;
+  background: var(--bg); color: var(--text); transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group textarea:focus {
+  outline: none; border-color: var(--accent);
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+.services-check { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.services-check label {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-weight: 400; font-size: 0.875rem; cursor: pointer;
+  padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid var(--border);
+  transition: background 0.15s, border-color 0.15s;
+}
+.services-check label:has(input:checked) {
+  background: oklch(0.55 0.18 50 / 0.08); border-color: var(--accent);
+}
+.services-check input[type="checkbox"] { accent-color: var(--accent); }
+.form-submit {
+  width: 100%; padding: 0.875rem; margin-top: 0.5rem;
+}
+.form-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+.thank-you { text-align: center; padding: 2rem 0; }
+.thank-you .check-icon { font-size: 3rem; margin-bottom: 1rem; }
+.thank-you h2 { margin-bottom: 0.75rem; }
+.thank-you p { color: var(--text-muted); font-size: 1rem; }
+
 /* language */
 [data-lang="en"] .lang-fr { display: none; }
 [data-lang="fr"] .lang-en { display: none; }
@@ -219,6 +271,8 @@ footer li a { font-size: 0.875rem; }
   .hero h1 { font-size: clamp(2rem, 10vw, 2.75rem); }
   .hero-ctas { flex-direction: column; }
   .hero-ctas .btn { width: 100%; justify-content: center; }
+  .modal { padding: 1.5rem; }
+  .services-check { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -269,8 +323,8 @@ footer li a { font-size: 0.875rem; }
         <p class="lang-en">Reliable IT solutions for your business without the contractor price tag. Tailored services to help you operate smarter and more securely.</p>
         <p class="lang-fr">Des solutions informatiques fiables pour votre entreprise sans les tarifs excessifs. Des services adaptés pour opérer de façon plus intelligente.</p>
         <div class="hero-ctas">
-          <a href="#contact" class="btn btn-primary lang-en">Get a free consultation</a>
-          <a href="#contact" class="btn btn-primary lang-fr">Consultation gratuite</a>
+          <button class="btn btn-primary lang-en" onclick="openContactForm()">Get a free consultation</button>
+          <button class="btn btn-primary lang-fr" onclick="openContactForm()">Consultation gratuite</button>
           <a href="#services" class="btn btn-outline lang-en">View services</a>
           <a href="#services" class="btn btn-outline lang-fr">Nos services</a>
         </div>
@@ -354,8 +408,8 @@ footer li a { font-size: 0.875rem; }
     <h2 class="lang-fr">Prêt à travailler avec<br>un vrai professionnel?</h2>
     <p class="lang-en">Get in touch today for a free, no-obligation consultation. Let's talk about what your business needs.</p>
     <p class="lang-fr">Contactez-moi dès aujourd'hui pour une consultation gratuite, sans engagement. Parlons de ce dont votre entreprise a besoin.</p>
-    <a href="mailto:info@stitchsecure.com" class="btn btn-primary lang-en">Get in touch</a>
-    <a href="mailto:info@stitchsecure.com" class="btn btn-primary lang-fr">Contactez-moi</a>
+    <button class="btn btn-primary lang-en" onclick="openContactForm()">Get in touch</button>
+    <button class="btn btn-primary lang-fr" onclick="openContactForm()">Contactez-moi</button>
   </div>
 </section>
 
@@ -391,6 +445,63 @@ footer li a { font-size: 0.875rem; }
     </div>
   </div>
 </footer>
+
+<div class="modal-overlay" id="contactModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeContactForm()" aria-label="Close">&times;</button>
+    <div id="contactFormContent">
+      <h2 class="lang-en">Get a free consultation</h2>
+      <h2 class="lang-fr">Consultation gratuite</h2>
+      <p class="modal-sub lang-en">Tell us about your needs and we'll get back to you shortly.</p>
+      <p class="modal-sub lang-fr">Décrivez vos besoins et nous vous répondrons rapidement.</p>
+      <form id="contactForm" onsubmit="submitContactForm(event)">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <div class="form-group">
+          <label class="lang-en" for="cf-name">Full name *</label>
+          <label class="lang-fr" for="cf-name">Nom complet *</label>
+          <input type="text" id="cf-name" name="name" required>
+        </div>
+        <div class="form-group">
+          <label class="lang-en" for="cf-email">Email *</label>
+          <label class="lang-fr" for="cf-email">Courriel *</label>
+          <input type="email" id="cf-email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label class="lang-en" for="cf-phone">Phone number</label>
+          <label class="lang-fr" for="cf-phone">Numéro de téléphone</label>
+          <input type="tel" id="cf-phone" name="phone">
+        </div>
+        <div class="form-group">
+          <label class="lang-en">Services you're interested in</label>
+          <label class="lang-fr">Services qui vous intéressent</label>
+          <div class="services-check">
+            <label><input type="checkbox" name="services" value="CCTV & Security"><span class="lang-en">CCTV & Security</span><span class="lang-fr">Vidéosurveillance</span></label>
+            <label><input type="checkbox" name="services" value="Payment Terminals"><span class="lang-en">Payment Terminals</span><span class="lang-fr">Terminaux de paiement</span></label>
+            <label><input type="checkbox" name="services" value="Websites & Ordering"><span class="lang-en">Websites & Ordering</span><span class="lang-fr">Sites web & commandes</span></label>
+            <label><input type="checkbox" name="services" value="IT Support"><span class="lang-en">IT Support</span><span class="lang-fr">Support informatique</span></label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="lang-en" for="cf-message">Message</label>
+          <label class="lang-fr" for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary form-submit" id="formSubmitBtn">
+          <span class="lang-en">Send request</span>
+          <span class="lang-fr">Envoyer la demande</span>
+        </button>
+      </form>
+    </div>
+    <div id="contactThankYou" class="thank-you" style="display:none">
+      <div class="check-icon">✓</div>
+      <h2 class="lang-en">Thank you for contacting us!</h2>
+      <h2 class="lang-fr">Merci de nous avoir contacté!</h2>
+      <p class="lang-en">We will get back to you in the shortest delays.</p>
+      <p class="lang-fr">Nous vous répondrons dans les plus brefs délais.</p>
+    </div>
+  </div>
+</div>
 
 <script>
 (function() {
@@ -434,7 +545,67 @@ footer li a { font-size: 0.875rem; }
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // contact modal
+  const modal = document.getElementById('contactModal');
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeContactForm(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('open')) closeContactForm(); });
 })();
+
+function openContactForm() {
+  document.getElementById('contactFormContent').style.display = '';
+  document.getElementById('contactThankYou').style.display = 'none';
+  document.getElementById('contactForm').reset();
+  document.getElementById('contactModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeContactForm() {
+  document.getElementById('contactModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function submitContactForm(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn = document.getElementById('formSubmitBtn');
+  btn.disabled = true;
+
+  const checked = [...form.querySelectorAll('input[name="services"]:checked')].map(c => c.value);
+  const formData = new FormData();
+  formData.append('name', form.name.value);
+  formData.append('email', form.email.value);
+  formData.append('phone', form.phone.value || 'Not provided');
+  formData.append('services', checked.length ? checked.join(', ') : 'None selected');
+  formData.append('message', form.message.value || 'No message');
+  formData.append('_subject', 'New consultation request — Stitch Secure');
+  formData.append('_captcha', 'false');
+  formData.append('_template', 'table');
+
+  var fallback = 'mailto:ridalembardi@gmail.com?subject=Consultation%20Request&body=' +
+    encodeURIComponent('Name: ' + form.name.value + '\nEmail: ' + form.email.value +
+    '\nPhone: ' + (form.phone.value || 'N/A') + '\nServices: ' +
+    (checked.length ? checked.join(', ') : 'None') + '\nMessage: ' + (form.message.value || 'None'));
+
+  fetch('https://formsubmit.co/ajax/ridalembardi@gmail.com', {
+    method: 'POST',
+    body: formData
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.success) {
+      document.getElementById('contactFormContent').style.display = 'none';
+      document.getElementById('contactThankYou').style.display = '';
+    } else {
+      window.location.href = fallback;
+    }
+    btn.disabled = false;
+  })
+  .catch(() => {
+    window.location.href = fallback;
+    btn.disabled = false;
+  });
+}
 </script>
 </body>
 </html>
